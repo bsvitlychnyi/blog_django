@@ -1,0 +1,60 @@
+<ul>
+
+{% for com in comments %}
+<div >
+    <p>{{com.author}}---{{com.date}}
+    <p>{{com.massage}}
+
+<!-- Button trigger modal -->
+{% if user.is_authenticated %}<p><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter{{ com.pk }}">
+  Ответить
+</button>{% endif %}
+
+<!-- Modal -->
+<form action="{% url 'get_comm_on_comm' %}" method="POST">
+        {% csrf_token %}
+<div class="modal fade" id="exampleModalCenter{{ com.pk }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">{{ com.massage }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type='hidden' name='comm-id' value='{{com.pk}}'>
+        Текст  
+        <p><textarea class="form-control"name='comm-message' id="comm-message"  rows="3"></textarea></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Передумал</button>
+        <button type="submit" class="btn btn-primary">Отправить</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+
+
+
+
+    {% if com.rcomments.exists %}
+       {% with com.ccomments as comments %}
+            {% include "blog/comments.html" %}
+        {% endwith %}    
+    {% endif %}
+
+
+        {% empty %}
+
+        <h5>"Комментариев нет"</h5> 
+
+{% endfor %}
+
+
+
+
+</ul>
+
+    </div>

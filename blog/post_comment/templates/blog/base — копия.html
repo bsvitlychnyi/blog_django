@@ -1,0 +1,134 @@
+
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+    <body>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-7">
+            <div class="row">
+                <div class="col">
+        {% if user.is_authenticated %}
+
+             <p class="display-4">Привет, {{ user.username }} </p>
+
+             <br>{{google.id}}
+
+             <p>Если что, можешь <a href = "{% url 'logout' %}">выйти</a> отсюда </p>
+
+<div class="">
+    <hr><hr>
+</div>
+        {% else %}
+             Войти с помощью <a href="{% url 'social:begin' 'google-oauth2' %}">GOOGLE</a> или <a href="{% url 'social:begin' 'github' %}">GITHUB</a>
+             <p><font size="3" color="red" face="Arial">Для того, чтобы постить записи и комментировать, необходимо авторизироваться</font></p>
+        {% endif %}
+                </div>
+                <div class="col">
+                  {% if user.is_authenticated %}
+                    {% for field in form %}
+
+                        {% if forloop.first %}
+                        <form action="{% url 'get_post' %}" method="post">
+                        {% csrf_token %}
+                        {% endif %}
+    
+                          <div class="form-group">
+                            {% if field.errors %}
+                              <div class="alert alert-danger">
+                                {{ field.errors }}
+                              </div>
+                            {% endif %}
+                            {{ field.label }}
+                            {{ field }}
+                          </div>
+    
+                          {% if forloop.last %}
+                          <button type="submit" class="btn btn-primary">Отправить пост</button>
+                          </form>
+                          {% endif %}
+    
+                        {% endfor %}
+                        {% endif %}
+                </div>
+
+<div class="row">
+    <div class="col">
+
+    {% for post in posts %}
+    <div >
+    <h3> {{ post.title }} </h3>
+    <h6> {{ post.text }} </h6>
+            Автор: {{ post.author }}
+            <p> Опубликовано: {{ post.date }}
+
+<!-- Button trigger modal -->
+{% if user.is_authenticated %}<p><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter{{ post.pk }}">
+  Комментировать
+</button>{% endif %}
+
+<!-- Modal -->
+<form action="{% url 'get_comm' %}" method="POST">
+        {% csrf_token %}
+<div class="modal fade" id="exampleModalCenter{{ post.pk }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">{{ post.title }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type='hidden' name='post-id' value='{{post.pk}}'>
+        Текст комментария 
+        <p><textarea class="form-control"name='message' id="message"  rows="3"></textarea></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Передумал</button>
+        <button type="submit" class="btn btn-primary">Отправить</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+
+
+
+{% if post.pcomments.exists %}
+       {% with post.comments as comments %}
+            {% include "blog/comments.html" %}
+        {% endwith %}    
+{% endif %}
+
+
+
+{% endfor %}
+
+
+
+
+    
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+
+
+
+</html>
